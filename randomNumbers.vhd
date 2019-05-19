@@ -1,16 +1,44 @@
 
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
-ENTITY part2 IS
-PORT (--Clk, RST: IN STD_LOGIC;
-	QT: buffer STD_LOGIC_VECTOR(17 DOWNTO 0);
-      QA: buffer STD_LOGIC_VECTOR(21 DOWNTO 0);
-      QV1: buffer STD_LOGIC_VECTOR(46 DOWNTO 0)
-      );
-END part2;
-ARCHITECTURE Behavior OF part2 IS
+ENTITY RNG IS
+GENERIC(
+         numerosAleatorios: integer:= 2000;
 
-SIGNAL numerosAleatorios: integer:= 26000;
+         CLK_PERIOD : time := 1 ns;         
+
+         -- Semillas para cada variable
+         SEED1: STD_LOGIC_VECTOR(17 DOWNTO 0):= "000000000000000001";
+         SEED2: STD_LOGIC_VECTOR(21 DOWNTO 0):= "0000000000000000000010";
+         SEED3: STD_LOGIC_VECTOR(46 DOWNTO 0):= "00000000000000000000000000000000000000000000001";
+          -- Valor máximo permitido(vmp)
+         vmpTime : STD_LOGIC_VECTOR(17 DOWNTO 0):= "101010001011111000" ;
+         vmpAmount : STD_LOGIC_VECTOR(21 DOWNTO 0):= "1001110011001110011100" ;
+         vmpV1 : STD_LOGIC_VECTOR(46 DOWNTO 0):= "10110101111001100010000011110100100000000000000";
+
+          -- Valor minimo permitido(vlp)
+         vlpV1 : STD_LOGIC_VECTOR(46 DOWNTO 0):= "00000000000000000000000000000000000000011001100";
+
+          --Valor maximo fraude
+         vmfTime : STD_LOGIC_VECTOR(17 DOWNTO 0):= "101001100101101100" ;
+         vmfAmount : STD_LOGIC_VECTOR(21 DOWNTO 0):= "0000110011111001101011" ;
+         vmfV1 : STD_LOGIC_VECTOR(46 DOWNTO 0):= "10110100110011110010011010101011011100100000000";
+
+          --Valor minimo fraude
+         vlfTime : STD_LOGIC_VECTOR(17 DOWNTO 0):= "000000000110010110" ;
+         vlfAmount : STD_LOGIC_VECTOR(21 DOWNTO 0):= "0000000000000000000000" ;
+         vlfV1 : STD_LOGIC_VECTOR(46 DOWNTO 0):= "00000000000000000000110110100101111101010010000"
+       );
+
+PORT (Clk, RST: INOUT STD_LOGIC;
+	    QT: buffer STD_LOGIC_VECTOR(17 DOWNTO 0);
+      QA: buffer STD_LOGIC_VECTOR(21 DOWNTO 0);
+      QV1: buffer STD_LOGIC_VECTOR(46 DOWNTO 0);
+      porcentajeDeFraudes: OUT REAL
+      );
+END RNG;
+
+ARCHITECTURE Behavior OF RNG IS
 
 -- Parametrización de vectores
 type randomVectorTime is array (0 to numerosAleatorios) of std_logic_vector(17 downto 0);
@@ -28,40 +56,9 @@ SIGNAL Contador4: integer:= 0;
 SIGNAL Contador5: integer:= 0;
 -- Contadores para identificar cuando uno de los números generados entra dentro del rango fraude
 SIGNAL numeroDeFraudes: integer:= 0;
-SIGNAL porcentajeDeFraudes: real:= 0.0;
-
--- Semillas para cada variable
-SIGNAL SEED1: STD_LOGIC_VECTOR(17 DOWNTO 0):= "000000000000000001";
-SIGNAL SEED2: STD_LOGIC_VECTOR(21 DOWNTO 0):= "0000000000000000000010";
-SIGNAL SEED3: STD_LOGIC_VECTOR(46 DOWNTO 0):= "00000000000000000000000000000000000000000000001";
--- Señal de Reloj y RESET
-SIGNAL Clk: STD_LOGIC;
-SIGNAL RST: STD_LOGIC;
--- Constantes
--- Tiempo
-CONSTANT CLK_PERIOD : time := 1 ns;
-
--- Valor máximo permitido(vmp)
-CONSTANT vmpTime : STD_LOGIC_VECTOR(17 DOWNTO 0):= "101010001011111000" ;
-CONSTANT vmpAmount : STD_LOGIC_VECTOR(21 DOWNTO 0):= "1001110011001110011100" ;
-CONSTANT vmpV1 : STD_LOGIC_VECTOR(46 DOWNTO 0):= "10110101111001100010000011110100100000000000000";
-
--- Valor minimo permitido(vlp)
-CONSTANT vlpV1 : STD_LOGIC_VECTOR(46 DOWNTO 0):= "00000000000000000000000000000000000000011001100";
-
---Valor maximo fraude
-CONSTANT vmfTime : STD_LOGIC_VECTOR(17 DOWNTO 0):= "101001100101101100" ;
-CONSTANT vmfAmount : STD_LOGIC_VECTOR(21 DOWNTO 0):= "0000110011111001101011" ;
-CONSTANT vmfV1 : STD_LOGIC_VECTOR(46 DOWNTO 0):= "10110100110011110010011010101011011100100000000";
-
---Valor minimo fraude
-CONSTANT vlfTime : STD_LOGIC_VECTOR(17 DOWNTO 0):= "000000000110010110" ;
-CONSTANT vlfAmount : STD_LOGIC_VECTOR(21 DOWNTO 0):= "0000000000000000000000" ;
-CONSTANT vlfV1 : STD_LOGIC_VECTOR(46 DOWNTO 0):= "00000000000000000000110110100101111101010010000";
-
+--SIGNAL porcentajeDeFraudes: real:= 0.0;
 
 BEGIN
-
    
 Clock: process
 begin
@@ -77,9 +74,8 @@ wait for CLK_PERIOD/2;
         
         end if;
         
- 
-  
 end process;
+
    
    RESET: process
 begin

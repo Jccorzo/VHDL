@@ -3,14 +3,14 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 ENTITY RNG IS
 GENERIC(
-         numerosAleatorios: integer:= 2000;
+         numerosAleatorios: integer:= 26000;
 
          CLK_PERIOD : time := 1 ns;         
 
          -- Semillas para cada variable
-         SEED1: STD_LOGIC_VECTOR(17 DOWNTO 0):= "000000000000000001";
-         SEED2: STD_LOGIC_VECTOR(21 DOWNTO 0):= "0000000000000000000010";
-         SEED3: STD_LOGIC_VECTOR(46 DOWNTO 0):= "00000000000000000000000000000000000000000000001";
+         SEED1: STD_LOGIC_VECTOR(17 DOWNTO 0):= "000000000000001000";
+         SEED2: STD_LOGIC_VECTOR(21 DOWNTO 0):= "0000000000000001000010";
+         SEED3: STD_LOGIC_VECTOR(46 DOWNTO 0):= "00000000000000000000000000000000001000000000001";
           -- Valor máximo permitido(vmp)
          vmpTime : STD_LOGIC_VECTOR(17 DOWNTO 0):= "101010001011111000" ;
          vmpAmount : STD_LOGIC_VECTOR(21 DOWNTO 0):= "1001110011001110011100" ;
@@ -56,7 +56,10 @@ SIGNAL Contador4: integer:= 0;
 SIGNAL Contador5: integer:= 0;
 -- Contadores para identificar cuando uno de los números generados entra dentro del rango fraude
 SIGNAL numeroDeFraudes: integer:= 0;
---SIGNAL porcentajeDeFraudes: real:= 0.0;
+
+SIGNAL Contador6: integer:= 0;
+SIGNAL Contador7: integer:= 0;
+SIGNAL Contador8: integer:= 0;
 
 BEGIN
    
@@ -124,6 +127,8 @@ end process;
       
       vectorTime(Contador2) <= QT;
       
+      Contador6 <= Contador6 + 1;
+      
       if QT > vmpTime then
       Contador2 <= Contador2;
       else
@@ -173,6 +178,8 @@ end process;
       
       --ZA <= QA;
       vectorAmount(Contador3) <= QA;
+      
+      Contador7 <= Contador7 + 1;
       
       if QA > vmpAmount then
       Contador3 <= Contador3;
@@ -249,6 +256,8 @@ end process;
       --ZV1 <= QV1;
       vectorV1(Contador4) <= QV1;
       
+      Contador8 <= Contador8 + 1;
+      
       if ((QV1 < vlpV1) OR (QV1 > vmpV1))  then
       Contador4 <= Contador4;
       else
@@ -270,6 +279,11 @@ end process;
         wait on porcentajeDeFraudes ;
         REPORT "EL NUMERO DE FRAUDES FUE DE: " & integer'image(numeroDeFraudes) &" DE UN TOTAL DE " & integer'image(numerosAleatorios) &" TRANSACCIONES SIMULADAS";
         REPORT "EL PORCENTAJE DE FRAUDES ENCONTRADOS ES DEL: " & real'image(porcentajeDeFraudes) &" %";
+        
+        REPORT "NUMEROS ALEATORIOS GENERADOS PARA LA VARIABLE 1: " & integer'image(Contador6);
+        
+        REPORT "NUMEROS ALEATORIOS GENERADOS PARA LA VARIABLE 2: " & integer'image(Contador7);
+        REPORT "NUMEROS ALEATORIOS GENERADOS PARA LA VARIABLE 3: " & integer'image(Contador8);
         wait;
         
         end if;
